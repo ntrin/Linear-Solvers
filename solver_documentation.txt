@@ -1,0 +1,322 @@
+ACSE5 ASSIGNMENT LINEAR SOLVERS DOCUMENTATION
+--------------------------------------------------------------------------------------------------------------------------------
+Date: 1st. February
+Group: Rogue Rock
+        * Gabriel Lipkowitz    --  
+        * Nicolas Trinephi     -- nt719
+        * Albert Celma Ortega  -- ac10318
+
+Assignment: Linear solvers
+
+These solvers are designed to take linear systems of the form Ax = b, and solve for x.
+Input values are objects of the same class (this->).
+
+
+S O L V E R S
+--------------------------------------------------------------------------------------------------------------------------------
+Implemented solvers:
+    - ITERATIVE:
+        * Jacobi ------------ (dense/sparse/banded)
+        * Gauss-Seidel ------ (dense/sparse/banded)
+        * SOR --------------- (dense/sparse/banded)
+        * Conjugate Gradient ---- (dense/sparse)
+    
+    - DIRECT:
+        * LU decomposition -- (dense/sparse^)
+        * Cholesky ---------- (dense/sparse^)
+--------------------------------------------------------------------------------------------------------------------------------
+
+ITERATIVE SOLVERS
+-----------------
+
+JACOBI
+Matrix<T>::Jacobi(std::vector<double>& b, std::vector<double>& x)
+    """ 
+    Conjugate Gradient Solver
+    Iterative solver which takes an initial guess of x, computes r = b - Ax.
+    Calculates two coefficient alpha and beta which update r and are updated for each
+    iteration. Stops after r sufficiently small, a tolerance can be set.
+    
+    Parameters:
+    -----------
+    b: std::vector<T>
+        Constant vector b
+    x: std::vector<T>
+        Solution vector x to the linear system of equations
+
+GAUSS SEIDEL
+Matrix<T>::Gauss_seidel(std::vector<double>& b, std::vector<double>& x)
+    """ 
+    Conjugate Gradient Solver
+    Iterative solver which takes an initial guess of x, computes r = b - Ax.
+    Calculates two coefficient alpha and beta which update r and are updated for each
+    iteration. Stops after r sufficiently small, a tolerance can be set.
+    
+    Parameters:
+    -----------
+    b: std::vector<T>
+        Constant vector b
+    x: std::vector<T>
+        Solution vector x to the linear system of equations
+
+SOR
+Matrix<T>::SOR(std::vector<double>& b, std::vector<double>& x)
+    """ 
+    Conjugate Gradient Solver
+    Iterative solver which takes an initial guess of x, computes r = b - Ax.
+    Calculates two coefficient alpha and beta which update r and are updated for each
+    iteration. Stops after r sufficiently small, a tolerance can be set.
+    
+    Parameters:
+    -----------
+    b: std::vector<T>
+        Constant vector b
+    x: std::vector<T>
+        Solution vector x to the linear system of equations
+
+4 * Conjugate Gradient (dense/sparse)
+-------------------------------------
+
+Dense -----
+
+Matrix<T>::Conj_Grad(std::vector<double>& b, std::vector<double>& x)
+    """ 
+    Conjugate Gradient Solver
+    Iterative solver which takes an initial guess of x, computes r = b - Ax.
+    Calculates two coefficient alpha and beta which update r and are updated for each
+    iteration. Stops after r sufficiently small, a tolerance can be set.
+    
+    Parameters:
+    -----------
+    b: std::vector<T>
+        Constant vector b
+    x: std::vector<T>
+        Solution vector x to the linear system of equations
+
+    Internal methods:
+    -----------------
+    Matrix Vector Multiplication: Matrix<T>::matVecMult() method
+        Multiplies a dense matrix and a vector
+
+    Returns: (void)
+    --------
+    (Modified input parameters)
+
+    x_vec : std::vector<T>
+        Solution to the original system of equations Ax = b;
+
+
+
+    """
+
+    METHODS CALLED INTERNALLY
+    -------------------------
+
+    Matrix<T>::matVecMult(std::vector<double>& input, std::vector<double>& output)
+    """
+    Method which multiplies an input matrix object with a vector.
+
+    Parameters:
+    -----------
+        input: std::vector<T>
+            constant vector
+        x: std::vector<T>
+            Solution vector x to the linear system of equations
+
+    Returns: (void)
+    --------
+        (Modified input paramters)
+
+        x: std::vector<T>
+            Solution to the multiplication
+
+
+
+
+
+
+
+Sparse ----
+
+Theh iterative solvers are similar to the Dense variations, with Sparse matrix - vector multiplication as main differences.
+
+
+METHODS CALLED INTERNALLY
+-------------------------
+
+Sparse Matrix Vector Multiplication
+CSRMatrix<T>::matVecMult(std::vector<double>& input, std::vector<double>& output)
+"""
+Method which multiplies an input CSR matrix object with a vector.
+
+Parameters:
+-----------
+    input: std::vector<T>
+        constant vector
+    x: std::vector<T>
+        Solution vector x to the linear system of equations
+
+Returns: (void)
+--------
+    (Modified input paramters)
+
+    x: std::vector<T>
+        Solution to the multiplication
+
+
+
+DIRECT SOLVERS   
+--------------
+
+
+1 * LU decomposition dense
+--------------------
+
+Matrix<T>:: LU(Matrix<T>& L, std::vector<T>& b_vec, std::vector<T>& x_vec);
+    """ 
+    LU decomposition solver
+    Direct solver that decomposes the original system of equations Ax = b in LUx = b ; Which is a two-stage system to solve.
+    This solver first decomposes the matrix A into two triangular matrices L (lower) and U(upper) by gaussian elimination and then calls
+    at forward and backward substitution.
+    
+    Parameters:
+    -----------
+    L : Matrix<T> object
+        Lower triangular dense matrix
+    b_vec: std::vector<T>
+        Constant vector b
+    x_vec: std::vector<T>
+        Solutionv ector x to the linear system of equations
+
+    Internal methods:
+    -----------------
+    Forward substitution: Matrix<T>::FS() method
+        Forward substitution to solve Ly=b
+    
+    Backward substitution: Matrix<T>::BS() method
+        Backward substitution to solve Ux=y --> obtain solution vector x 
+    
+
+
+    Returns: (void)
+    --------
+    (Modified input parameters)
+
+    x_vec : std::vector<T>
+        Solution to the original system of equations Ax = b;
+
+
+
+    """
+
+    METHODS CALLED INTERNALLY
+    -------------------------
+
+    Matrix<T>:: BS(std::vector<T>& x_vec, std::vector<T>& y_vec);
+        """
+        Backwards substitution function
+        Function used to solve systems of type Ux = b; with upper triangular matrices (U).
+        Implemented in the LU decomposition solver to get the final solution of the system after doing FS.
+        Could be used as well to obtain solution after gaussian elimination.
+        
+        Parameters:
+        -----------
+        x_vec : std::vector<T>
+            solution vector
+        y_vec: std::vector<T>
+            Constant vector used to solve systme Ux=y
+            
+        Returns:
+        --------
+        x_vec : std::vector<T>
+            std::vector<T> x_vec updated with the solution to the system of linear equations
+
+        """
+
+    Matrix<T>:: FS(Matrix<T>& Lower, std::vector<T>& y_vec , std::vector<T>& b_vec);
+        """
+        Forward  substitution function
+        Function used to solve systems of type Lx = b with lower triangular matrices (L).
+        Implemented in the LU decomposition solver to obtain the auxiliar y_vector needed to solve the system.
+        
+        Parameters:
+        -----------
+        Lower: Matrix<T> object
+            Lower triangular matrix
+        x_vec : std::vector<T>
+            solution vector
+        y_vec: std::vector<T>
+            Constant vector used to solve systme Ux=y
+            
+        Returns:
+        --------
+        x_vec : std::vector<T>
+            std::vector<T> x_vec updated with the solution to the system of linear equations
+
+        """
+
+
+
+2 * Cholesky
+
+Dense -----
+
+Matrix<T>::Cholesky(double* L)
+    """
+    Cholesky factorisation solver
+    Factorises a given SPD matrix A into a lower triangular matrix called the Cholesky factor, L. If multiplied by its transpose, LT will yeild A: L * LT = A.
+    Forward and Back substitution is necessary to obtain the final result x.
+
+    Ax = b
+    L * LT = b  
+    Ly = b for LTx = y , solve for y with Forward substitution
+    LTx = y  solve for x with backward substitution
+
+    Parameters: 
+    -----------
+    L : double array
+        empty array with rows * cols entries
+        
+    Returns: (void)
+    --------
+    L : double array
+        factorised values
+    """
+This method requires back and forward substitution as well as a Matrix Transposer to obtain the final x solution values.
+
+Matrix Transposer
+Transposer(Matrix<T>& transposed)
+    """
+    Matrix transposer function
+
+    Parameters:
+    -----------
+    transposed : Matrix<T> object
+        
+    Returns:
+    --------
+    transposed : Matrix<T> object
+        Updated values correspond to the transpose of the input Matrix<T> object to be transposed.
+
+    """
+
+
+Sparse -----
+
+CSRMatrix<T>::Cholesky()
+    """
+    Cholesky Factorization for CSR Matrix
+    Obtains the structure of the L factor of an input CSR matrix and computes the non-zero values of the L factor.
+
+    Parameters :
+    -----------
+
+    Returns :
+    --------
+    L : CSRMatrix<T> object
+        CSR Matrix with factorized values and fill-in non-zero values.
+
+    """
+
+
+
